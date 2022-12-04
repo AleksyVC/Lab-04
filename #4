@@ -1,0 +1,72 @@
+//this program makes the joystick control the direction of the stepper motor 
+
+//include the arduino stepper library
+#include<Stepper.h>
+
+//define constants
+
+//number of steps per interval motor revolution
+const float STEPS_PER_REV = 32;
+
+//amount of gear reduction
+const float GEAR_RED = 64;
+
+//Number of steps per geared output rotation
+const float STEPS_PER_OUT_REV = STEPS_PER_REV * GEAR_RED;
+
+//define variables 
+
+//number of steps required
+int StepsRequired;
+
+//cretae instance of stepper class
+//specify pins used for motor coils
+//the pins used are 8,9,10,11
+//connected to ULN2003 motor driver In1, IN2, In3, In4
+//pins entered in sequence 1-3-2-4 for proper step sequencing
+
+Stepper steppermotor(STEPS_PER_REV, 8,10,9,11);
+
+int joystickpos;
+int XAxis = A1;
+int sensor;
+
+void setup() {
+  //nothing (stepper library sets pins as outputs)
+  Serial.begin(9600);
+  pinMode(2,INPUT_PULLUP);
+}
+
+void loop() {
+joystickpos = analogRead(XAxis);
+sensor = digitalRead(2);
+
+if(sensor<1){
+
+if(470<joystickpos<490){
+//when the joystick is not being touched the motor does not move
+}
+
+if(joystickpos>490){
+StepsRequired = 5;
+steppermotor.setSpeed(700);  //makes the motor turn CCW
+steppermotor.step(5);
+}
+
+if(joystickpos<470){
+StepsRequired = -5;
+steppermotor.setSpeed(700);  //makes the motor turn CW
+steppermotor.step(-5);
+}
+}
+
+else(sensor>=1);{
+  //when the sensor is tilted the motor does not work
+}
+
+Serial.print("Joystick = ");
+Serial.print(joystickpos );
+Serial.print("  ");
+Serial.print("Sensor = ");
+Serial.println(sensor);
+}
