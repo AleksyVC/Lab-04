@@ -1,0 +1,44 @@
+/*
+joystcik connected to motor and when the joystick is not touched the motor does not move, 
+when the joystick is moved in one direction the motor spins in one direction 
+and when the joystick is moved in another direction the motor spin spins in another direction
+while controlling the speed
+*/
+
+
+void setup() {
+pinMode(5, OUTPUT); // Sets pin 5 as an output
+pinMode(6, OUTPUT); // Sets pin 6 as an output
+}
+
+void loop() {
+int joystickY = analogRead(A0); //read value of pin A0
+int resultY = map(joystickY, 0, 1023, 0, 3); //maps value of "joystickY" from 0 - 1023 to 0 - 3
+
+int rangeL = map(joystickY, 0, 347, 255, 0); // Creates a range called "rangeL" and gives it the mapped value of "joystickY" from 0 - 347 to 255 - 0
+int rangeH = map(joystickY, 696, 1023, 0, 255); // Creates a range called "rangeH" and gives it the mapped value of "joystickY" from 696 - 1023 to 0 - 255
+
+
+switch(resultY){ 
+
+case 0: // When "resultY" is 0
+analogWrite(5, rangeL); // Sets pin 5 the value of "rangeL"
+analogWrite(6, 0); // Sets pin 6 the value of 0
+break; 
+
+case 1: // When "resultY" is 1
+analogWrite(5, 0); // Sets pin 5 the value of 0
+analogWrite(6, 0); // Sets pin 6 the value of 0
+break; 
+
+case 2: // When "resultY" is 2
+analogWrite(5, 0); // Sets pin 5 the value of 0
+analogWrite(6, rangeH); // Sets pin 6 "rangeH"
+break; 
+
+case 3: // When "resultY" is 3
+analogWrite(5, 0); // Sets pin 5 the value of 0
+analogWrite(6, rangeH); // Sets pin 6 "rangeH"
+break; 
+}
+}
