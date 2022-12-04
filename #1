@@ -1,0 +1,16 @@
+//joystick controls the direction of the servo motor
+
+#include <Servo.h>
+Servo myservo;
+int XAxis = A0;  //declares what pin the joystick is conneted to
+
+void setup() {
+pinMode(XAxis,INPUT);
+myservo.attach(9);
+}
+
+void loop() {
+int X= analogRead(XAxis);  //Reads the X axis potentiometer
+map(X,0,1023,0,180); //map's the bit value to 0 to 180 degrees
+myservo.write(X);  // sends the value to the servo
+}
