@@ -1,0 +1,36 @@
+#include <Servo.h>
+Servo myservo;
+
+int servoPos;
+
+void setup() {
+Serial.begin(9600);
+
+myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+
+}
+
+void loop() {
+int value = analogRead(A0);
+// read the analog input value:
+  value = analogRead(A0);
+float y = value;
+float m = 204.6;
+float x = y/m;
+Serial.print(" Voltage = ");
+Serial.print(x); //prints the voltage
+
+
+int Vl = x*1000;
+
+servoPos = map(Vl,500,4800,0,180);
+myservo.write(servoPos);
+
+float R = x/0.00096;
+Serial.print("   Resistance = ");
+Serial.print(R); //prints the resistance
+  
+
+Serial.print("       Bit value = ");
+Serial.println(A0); // prints the bit value
+}
