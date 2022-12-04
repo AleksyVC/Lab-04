@@ -1,44 +1,74 @@
-/*
-joystcik connected to motor and when the joystick is not touched the motor does not move, 
-when the joystick is moved in one direction the motor spins in one direction 
-and when the joystick is moved in another direction the motor spin spins in another direction
-while controlling the speed
-*/
+#include "Stepper.h"
+#include "IRremote.h"
+
+#define STEPS  32
+int  Steps2Take;
+int receiver = 6;
+int direct = 0;
+int sped = 500;
+
+Stepper small_stepper(STEPS, 7, 10, 9, 11);
+IRrecv irrecv(receiver);
+decode_results results;
 
 
-void setup() {
-pinMode(5, OUTPUT); // Sets pin 5 as an output
-pinMode(6, OUTPUT); // Sets pin 6 as an output
+void setup()
+{ 
+  irrecv.enableIRIn();
+  Serial.begin(9600);
 }
 
-void loop() {
-int joystickY = analogRead(A0); // Creates an integer variable called "joystickY" and gives it the read value of pin A0
-int resultY = map(joystickY, 0, 1023, 0, 3); // Creates an integer variable called "resultY" and gives it the mapped value of "joystickY" from 0 - 1023 to 0 - 3
-
-int rangeL = map(joystickY, 0, 347, 255, 0); // Creates an integer variable called "rangeL" and gives it the mapped value of "joystickY" from 0 - 347 to 255 - 0
-int rangeH = map(joystickY, 696, 1023, 0, 255); // Creates an integer variable called "rangeH" and gives it the mapped value of "joystickY" from 696 - 1023 to 0 - 255
-
-
-switch(resultY){ // Compares the value of "resultY"
-
-case 0: // When "resultY" is 0
-analogWrite(5, rangeL); // Sets pin 5 the value of "rangeL"
-analogWrite(6, 0); // Sets pin 6 the value of 0
-break; 
-
-case 1: // When "resultY" is 1
-analogWrite(5, 0); // Sets pin 5 the value of 0
-analogWrite(6, 0); // Sets pin 6 the value of 0
-break; 
-
-case 2: // When "resultY" is 2
-analogWrite(5, 0); // Sets pin 5 the value of 0
-analogWrite(6, rangeH); // Sets pin 6 "rangeH"
-break; 
-
-case 3: // When "resultY" is 3
-analogWrite(5, 0); // Sets pin 5 the value of 0
-analogWrite(6, rangeH); // Sets pin 6 "rangeH"
-break; 
+void loop()
+{
+if (irrecv.decode(&results))
+{
+switch(results.value)
+{
+case 16736925:
+if(sped <2000){
+sped += 50;
 }
+break;
+
+case 16754775:
+sped -= 50;
+break;
+
+case 16769055:
+direct = 1;
+break;
+
+case 16748655:
+direct = 0;
+break;
+      
+case 16753245:
+direct = 2;
+break;
 }
+
+Serial.println(results.value);
+irrecv.resume();
+}  
+
+if(direct == 0){
+small_stepper.setSpeed(sped);
+Steps2Take  =  -10;
+small_stepper.step(Steps2Take);
+}
+
+else if(direct == 1){
+small_stepper.setSpeed(sped);
+Steps2Take  =  10;
+small_stepper.step(Steps2Take);
+}
+
+else{
+digitalWrite(11, LOW);
+digitalWrite(10, LOW);
+digitalWrite(9, LOW);
+digitalWrite(7, LOW);
+}
+
+}
+
